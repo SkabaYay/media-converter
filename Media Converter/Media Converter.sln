@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Media Converter", "Media Converter\Media Converter.pyproj", "{B51A30FC-B202-4570-BD03-5AEA2B29597F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B51A30FC-B202-4570-BD03-5AEA2B29597F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51A30FC-B202-4570-BD03-5AEA2B29597F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9813101C-B0A9-46AB-B4C3-9B2D110C7461}
+	EndGlobalSection
+EndGlobal
