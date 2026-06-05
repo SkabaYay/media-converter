@@ -13,6 +13,10 @@ class theGUI:
         self.root.title("Media Converter")
         self.root.configure(bg = "#202024")
 
+        self.fileClearToGo = False
+        self.directoryClearToGo = False
+
+        #creating the GUI
         self.canvas = tk.Canvas(self.root, width = 1920, height = 1080, bg = "#202024", highlightthickness=0)
         self.canvas.pack(padx = 10, pady = 10)
 
@@ -90,10 +94,10 @@ class theGUI:
         self.root.mainloop()
 
     def confirmPressed(self):
-        if self.optionOne.get() == "mp4" and self.optionTwo.get() == "mp3":
+        if self.optionOne.get().lower() == "mp4" and self.optionTwo.get().lower() == "mp3":
             self.mp4ToMp3()
         else:
-            messagebox.showerror(title = "Error", message = "you did something wrong bozo")
+            messagebox.showerror(title = "Error!!!!!!", message = "You did something wrong bozo")
 
     def mp4ToMp3(self):
         #sets up frame
@@ -129,7 +133,7 @@ class theGUI:
         #mp3 label
         tk.Label(
             self.mp4Frame,
-            text="mp3: ",
+            text="mp3 name: ",
             fg ="white",
             bg="#202024",
             font=("Arial", 30)
@@ -176,25 +180,57 @@ class theGUI:
             if hasattr(self, "mp4Path"):
                 self.mp4Path.destroy()
             filename = askopenfilename()
-            self.mp4Path = tk.Label(
-                self.mp4Frame,
-                text = filename,
-                fg = "white",
-                bg = "#202024",
-                font = ("Arial", 10)
-            )
+            #filename[:-3] didn't work for some reason. idk if I'm just being dumb or not but this will do
+            if filename[len(filename) - 3:len(filename)] == "mp4":
+                self.mp4Path = tk.Label(
+                    self.mp4Frame,
+                    text = filename,
+                    fg = "white",
+                    bg = "#202024",
+                    font = ("Arial", 10)
+                )
+                self.fileClearToGo = True
+            elif filename == "":
+                self.mp4Path = tk.Label(
+                    self.mp4Frame,
+                    text = "Input something.",
+                    fg = "red",
+                    bg = "#202024",
+                    font = ("Arial", 10)
+                )
+                self.fileClearToGo = False
+            else:
+                self.mp4Path = tk.Label(
+                    self.mp4Frame,
+                    text = "That's not a mp4 file. Try again.",
+                    fg = "red",
+                    bg = "#202024",
+                    font = ("Arial", 10)
+                )
+                self.fileClearToGo = False
             self.mp4Path.grid(row=0, column=2)
         else:
             if hasattr(self, "directoryPath"):
                 self.directoryPath.destroy()
-            filename = askdirectory()
-            self.directoryPath = tk.Label(
-                self.mp4Frame,
-                text = filename,
-                fg = "white",
-                bg = "#202024",
-                font = ("Arial", 10)
-            )
+            directoryName = askdirectory()
+            if directoryName != "":
+                self.directoryPath = tk.Label(
+                    self.mp4Frame,
+                    text = directoryName,
+                    fg = "white",
+                    bg = "#202024",
+                    font = ("Arial", 10)
+                )
+                self.directoryClearToGo = True
+            else:
+                self.directoryPath = tk.Label(
+                    self.mp4Frame,
+                    text = "Input something.",
+                    fg = "red",
+                    bg = "#202024",
+                    font = ("Arial", 10)
+                )
+                self.directoryClearToGo = False
             self.directoryPath.grid(row=2, column=2)
 
 theGUI()
