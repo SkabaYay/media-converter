@@ -1,8 +1,9 @@
 import tkinter as tk
+import os 
 from tkinter import messagebox
 from tkinter.filedialog import askopenfile, askopenfilename, askdirectory
-import os 
 from pydub import AudioSegment
+from time import sleep
 
 class theGUI:
 
@@ -13,8 +14,17 @@ class theGUI:
         self.root.title("Media Converter")
         self.root.configure(bg = "#202024")
 
+        #checking conditions
         self.fileClearToGo = False
         self.directoryClearToGo = False
+
+        #Determine conversion's master
+        self.convertMaster = None
+        self.convertType = ""
+
+        #for file and directory paths
+        self.filePath = ""
+        self.directoryPath = ""
 
         #creating the GUI
         self.canvas = tk.Canvas(self.root, width = 1920, height = 1080, bg = "#202024", highlightthickness=0)
@@ -102,7 +112,7 @@ class theGUI:
     def mp4ToMp3(self):
         #sets up frame
         self.mp4Frame = tk.Frame(self.canvas, bg="#202024")
-        self.canvas.create_window(950, 550, window=self.mp4Frame)
+        self.canvas.create_window(950, 700, window=self.mp4Frame)
         self.mp4Frame.columnconfigure(2, minsize=1080)
 
         #mp4 label
@@ -175,22 +185,53 @@ class theGUI:
 
         self.selectDirectory.grid(row=2, column=1, padx=10, pady=(20, 0))
 
+        #convert button 
+        self.convertMP4 = self.createConversionButton("mp4")
+        self.convertMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+    def createConversionButton(self, type):
+        if type == "mp4":
+            self.convertMaster = self.mp4Frame
+            self.convertType = "mp4"
+        return tk.Button(
+            self.convertMaster,
+            width = 50,
+            height = 3,
+            bg="#90fc03",
+            relief="solid",
+            bd=2,
+            text="Converttttttttttt",
+            font=("Arial", 20, "bold"),
+            fg="white",
+            command = self.convert
+        )
+
+    #add processing text bum
+    def createProcessingLabel(self):
+        return tk.Label(
+            self.convertMaster,
+            text = "Processing...",
+            fg = "white",
+            bg="#202024",
+            font=("Arial", 50)
+        )
+
     def selectFile(self, type):
         if type == "mp4":
             if hasattr(self, "mp4Path"):
                 self.mp4Path.destroy()
-            filename = askopenfilename()
+            self.filePath = askopenfilename()
             #filename[:-3] didn't work for some reason. idk if I'm just being dumb or not but this will do
-            if filename[len(filename) - 3:len(filename)] == "mp4":
+            if self.filePath[len(self.filePath) - 3:len(self.filePath)] == "mp4":
                 self.mp4Path = tk.Label(
                     self.mp4Frame,
-                    text = filename,
+                    text = self.filePath,
                     fg = "white",
                     bg = "#202024",
                     font = ("Arial", 10)
                 )
                 self.fileClearToGo = True
-            elif filename == "":
+            elif self.filePath == "":
                 self.mp4Path = tk.Label(
                     self.mp4Frame,
                     text = "Input something.",
@@ -210,20 +251,20 @@ class theGUI:
                 self.fileClearToGo = False
             self.mp4Path.grid(row=0, column=2)
         else:
-            if hasattr(self, "directoryPath"):
-                self.directoryPath.destroy()
-            directoryName = askdirectory()
-            if directoryName != "":
-                self.directoryPath = tk.Label(
+            if hasattr(self, "directoryPathText"):
+                self.directoryPathText.destroy()
+            self.directoryPath = askdirectory()
+            if self.directoryPath != "":
+                self.directoryPathText = tk.Label(
                     self.mp4Frame,
-                    text = directoryName,
+                    text = self.directoryPath,
                     fg = "white",
                     bg = "#202024",
                     font = ("Arial", 10)
                 )
                 self.directoryClearToGo = True
             else:
-                self.directoryPath = tk.Label(
+                self.directoryPathText = tk.Label(
                     self.mp4Frame,
                     text = "Input something.",
                     fg = "red",
@@ -231,7 +272,37 @@ class theGUI:
                     font = ("Arial", 10)
                 )
                 self.directoryClearToGo = False
-            self.directoryPath.grid(row=2, column=2)
+            self.directoryPathText.grid(row=2, column=2)
+
+    def convert(self):
+        self.convertMP4.destroy()
+        self.processingText = self.createProcessingLabel()
+        self.processingText.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+        if self.convertType == "mp4":
+            if self.fileClearToGo and self.directoryClearToGo and self.mp3Name.get() != "":
+                self.video = self.filePath
+                self.directory = self.directoryPath
+                self.audioName = self.mp3Name.get()
+                self.outputFile = os.path.join(self.directory, self.audioName + ".mp3")
+
+                #the actual conversion
+                self.audio = AudioSegment.from_file(self.video, format="mp4")
+                self.audio.export(self.outputFile, format="mp3")
+                messagebox.showinfo(title = "Success!!!!", message = "MP4 - MP3 conversion complete!")
+
+                #reset
+                self.processingText.destroy()
+                self.convertMP4 = self.createConversionButton("mp4")
+                self.convertMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+                self.directoryPathText.destroy()
+                self.mp4Path.destroy()
+                self.directoryPath = None
+                self.filePath = None
+                self.fileClearToGo = False
+                self.directoryClearToGo = False
+            else:
+                messagebox.showerror(title = "Error!!!!!", message = "Information missing. Go and see what you did.")
 
 theGUI()
 
