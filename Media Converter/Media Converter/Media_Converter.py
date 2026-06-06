@@ -305,25 +305,3 @@ class theGUI:
                 messagebox.showerror(title = "Error!!!!!", message = "Information missing. Go and see what you did.")
 
 theGUI()
-
-# #removes quotation because i'm lazyyyyy
-# def removequotation(string):
-#     return string.replace('"', "")
-
-# # function to... says it in the name
-# def convert_mp4_to_mp3(mp4_file_path, mp3_file_path):
-#     audio = audiosegment.from_file(mp4_file_path, format="mp4")
-    
-#     audio.export(mp3_file_path, format="mp3")
-    
-#     print(f"converted '{mp4_file_path}' to '{mp3_file_path}' successfully.")
-
-# # get user input for the mp4 file path and the desired mp3 file name
-# video = input("enter the path of the mp4 file you want to convert: ")
-# newvideo = removequotation(video)
-
-# audioname = input("enter the name of the output mp3 file (without extension): ")
-# outputfile = os.path.join(download, audioname + ".mp3")
-
-# convert_mp4_to_mp3(newvideo, outputfile)
-
