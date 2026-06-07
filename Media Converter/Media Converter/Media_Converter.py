@@ -18,13 +18,18 @@ class theGUI:
         self.fileClearToGo = False
         self.directoryClearToGo = False
 
-        #Determine conversion's master
+        #Conversion variables
         self.convertMaster = None
         self.convertType = ""
 
         #for file and directory paths
         self.filePath = ""
         self.directoryPath = ""
+
+        #colours
+        self.lightDark = "#202024"
+        self.dark = "#18181b"
+        self.green = "#90fc03"
 
         #creating the GUI
         self.canvas = tk.Canvas(self.root, width = 1920, height = 1080, bg = "#202024", highlightthickness=0)
@@ -33,14 +38,14 @@ class theGUI:
         #background rectangle
         self.canvas.create_rectangle(
             0, 100, 1920, 1080,
-            fill="#18181b",
+            fill=self.dark,
             outline = "black"
         )
 
         #input rectangle
         self.canvas.create_rectangle(
             150, 150, 1770, 350,
-            fill = "#202024",
+            fill = self.lightDark,
             outline = "white"
         )
 
@@ -65,7 +70,7 @@ class theGUI:
             self.root, 
             width = 20, 
             height = 2, 
-            bg = "#90fc03",
+            bg = self.green,
             relief = "solid",
             bd = 2,
             text = "Confirm", 
@@ -79,14 +84,14 @@ class theGUI:
         self.optionOne = tk.Entry(
             self.root, 
             width = 10,
-            bg = "#202024",
+            bg = self.lightDark,
             font = ("Arial", 40),
             fg = "white"
         )
         self.optionTwo = tk.Entry(
             self.root, 
             width = 10,
-            bg = "#202024",
+            bg = self.lightDark,
             font = ("Arial", 40),
             fg = "white"
         )
@@ -97,7 +102,7 @@ class theGUI:
         #background rectangle two
         self.canvas.create_rectangle(
             30, 425, 1870, 980,
-            fill = "#202024",
+            fill = self.lightDark,
             outline = "white"
         )
 
@@ -120,7 +125,7 @@ class theGUI:
             self.mp4Frame,
             text="mp4: ",
             fg ="white",
-            bg="#202024",
+            bg=self.lightDark,
             font=("Arial", 30)
         ).grid(row=0, column=0, padx=10)
 
@@ -129,7 +134,7 @@ class theGUI:
             self.mp4Frame,
             width=20,
             height=1,
-            bg="#90fc03",
+            bg=self.green,
             relief="solid",
             bd=2,
             text="Select file",
@@ -145,7 +150,7 @@ class theGUI:
             self.mp4Frame,
             text="mp3 name: ",
             fg ="white",
-            bg="#202024",
+            bg=self.lightDark,
             font=("Arial", 30)
         ).grid(row=1, column=0, padx=10)
 
@@ -153,7 +158,7 @@ class theGUI:
         self.mp3Name = tk.Entry(
             self.mp4Frame, 
             width = 20,
-            bg = "#202024",
+            bg = self.lightDark,
             font = ("Arial", 30),
             fg = "white"
         )
@@ -165,7 +170,7 @@ class theGUI:
             self.mp4Frame,
             text = "Destination: ",
             fg = "white",
-            bg="#202024",
+            bg=self.lightDark,
             font=("Arial", 30)
         ).grid(row=2, column=0, padx=10)
 
@@ -174,7 +179,7 @@ class theGUI:
             self.mp4Frame,
             width=20,
             height=1,
-            bg="#90fc03",
+            bg=self.green,
             relief="solid",
             bd=2,
             text="Select directory",
@@ -197,7 +202,7 @@ class theGUI:
             self.convertMaster,
             width = 50,
             height = 3,
-            bg="#90fc03",
+            bg=self.green,
             relief="solid",
             bd=2,
             text="Converttttttttttt",
@@ -212,7 +217,7 @@ class theGUI:
             self.convertMaster,
             text = "Processing...",
             fg = "white",
-            bg="#202024",
+            bg=self.lightDark,
             font=("Arial", 50)
         )
 
@@ -227,7 +232,7 @@ class theGUI:
                     self.mp4Frame,
                     text = self.filePath,
                     fg = "white",
-                    bg = "#202024",
+                    bg = self.lightDark,
                     font = ("Arial", 10)
                 )
                 self.fileClearToGo = True
@@ -236,7 +241,7 @@ class theGUI:
                     self.mp4Frame,
                     text = "Input something.",
                     fg = "red",
-                    bg = "#202024",
+                    bg = self.lightDark,
                     font = ("Arial", 10)
                 )
                 self.fileClearToGo = False
@@ -245,7 +250,7 @@ class theGUI:
                     self.mp4Frame,
                     text = "That's not a mp4 file. Try again.",
                     fg = "red",
-                    bg = "#202024",
+                    bg = self.lightDark,
                     font = ("Arial", 10)
                 )
                 self.fileClearToGo = False
@@ -259,7 +264,7 @@ class theGUI:
                     self.mp4Frame,
                     text = self.directoryPath,
                     fg = "white",
-                    bg = "#202024",
+                    bg = self.lightDark,
                     font = ("Arial", 10)
                 )
                 self.directoryClearToGo = True
@@ -268,19 +273,21 @@ class theGUI:
                     self.mp4Frame,
                     text = "Input something.",
                     fg = "red",
-                    bg = "#202024",
+                    bg = self.lightDark,
                     font = ("Arial", 10)
                 )
                 self.directoryClearToGo = False
             self.directoryPathText.grid(row=2, column=2)
 
     def convert(self):
-        self.convertMP4.destroy()
-        self.processingText = self.createProcessingLabel()
-        self.processingText.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
-
         if self.convertType == "mp4":
             if self.fileClearToGo and self.directoryClearToGo and self.mp3Name.get() != "":
+                self.convertMP4.destroy()
+                self.processingText = self.createProcessingLabel()
+                self.processingText.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+                sleep(.5)
+
                 self.video = self.filePath
                 self.directory = self.directoryPath
                 self.audioName = self.mp3Name.get()
