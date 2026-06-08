@@ -1,5 +1,7 @@
+from ast import Lambda
 import tkinter as tk
 import os 
+import yt_dlp
 from tkinter import messagebox
 from tkinter.filedialog import askopenfile, askopenfilename, askdirectory
 from pydub import AudioSegment
@@ -111,63 +113,73 @@ class theGUI:
     def confirmPressed(self):
         if self.optionOne.get().lower() == "mp4" and self.optionTwo.get().lower() == "mp3":
             self.mp4ToMp3()
+        elif self.optionOne.get().lower() == "youtube" and self.optionTwo.get().lower() == "mp3":
+            self.youtubeToMp3()
         else:
             messagebox.showerror(title = "Error!!!!!!", message = "You did something wrong bozo")
 
-    def mp4ToMp3(self):
-        #sets up frame
-        self.mp4Frame = tk.Frame(self.canvas, bg="#202024")
-        self.canvas.create_window(950, 700, window=self.mp4Frame)
-        self.mp4Frame.columnconfigure(2, minsize=1080)
-
-        #mp4 label
+    def createFirstLabel(self, master, type):
+        #the text
         tk.Label(
-            self.mp4Frame,
-            text="mp4: ",
+            master,
+            text=type + ": ",
             fg ="white",
             bg=self.lightDark,
             font=("Arial", 30)
         ).grid(row=0, column=0, padx=10)
 
-        #Select files button
-        self.selectFiles = tk.Button(
-            self.mp4Frame,
-            width=20,
-            height=1,
-            bg=self.green,
-            relief="solid",
-            bd=2,
-            text="Select file",
-            font=("Arial", 20, "bold"),
-            fg="white",
-            command=lambda: self.selectFile("mp4")
-        )
+        if type != "url":
+            #Select files button
+            self.selectFiles = tk.Button(
+                master,
+                width=20,
+                height=1,
+                bg=self.green,
+                relief="solid",
+                bd=2,
+                text="Select file",
+                font=("Arial", 20, "bold"),
+                fg="white",
+                command=lambda: self.selectFile(type, master)
+            )
 
-        self.selectFiles.grid(row=0, column=1, padx=10)
+            self.selectFiles.grid(row=0, column=1, padx=10)
+        else:
+            self.urlBox = tk.Entry(
+                master, 
+                width = 20,
+                bg = self.lightDark,
+                font = ("Arial", 30),
+                fg = "white"
+            )
 
-        #mp3 label
+            self.urlBox.grid(row=0, column=1, padx = 10)
+
+    def createSecondLabel(self, master, type):
+        #label
         tk.Label(
-            self.mp4Frame,
-            text="mp3 name: ",
+            master,
+            text=type + " name: ",
             fg ="white",
             bg=self.lightDark,
             font=("Arial", 30)
         ).grid(row=1, column=0, padx=10)
 
-        #entering mp3 name
-        self.mp3Name = tk.Entry(
-            self.mp4Frame, 
+        #entering label name
+        self.entryBox = tk.Entry(
+            master, 
             width = 20,
             bg = self.lightDark,
             font = ("Arial", 30),
             fg = "white"
         )
 
-        self.mp3Name.grid(row=1, column=1, pady=(20, 0))
+        self.entryBox.grid(row=1, column=1, pady=(20, 0))
 
+    def createDirectory(self, master):
         #text for location of file
         tk.Label(
-            self.mp4Frame,
+            master,
             text = "Destination: ",
             fg = "white",
             bg=self.lightDark,
@@ -176,7 +188,7 @@ class theGUI:
 
         #button for the location of file
         self.selectDirectory = tk.Button(
-            self.mp4Frame,
+            master,
             width=20,
             height=1,
             bg=self.green,
@@ -185,21 +197,14 @@ class theGUI:
             text="Select directory",
             font=("Arial", 20, "bold"),
             fg="white",
-            command=lambda:self.selectFile("location")
+            command=lambda:self.selectFile("location", master)
         )
 
         self.selectDirectory.grid(row=2, column=1, padx=10, pady=(20, 0))
 
-        #convert button 
-        self.convertMP4 = self.createConversionButton("mp4")
-        self.convertMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
-
-    def createConversionButton(self, type):
-        if type == "mp4":
-            self.convertMaster = self.mp4Frame
-            self.convertType = "mp4"
+    def createConversionButton(self, type, master):
         return tk.Button(
-            self.convertMaster,
+            master,
             width = 50,
             height = 3,
             bg=self.green,
@@ -208,28 +213,44 @@ class theGUI:
             text="Converttttttttttt",
             font=("Arial", 20, "bold"),
             fg="white",
-            command = self.convert
+            command = lambda:self.convert(type)
         )
 
-    #add processing text bum
-    def createProcessingLabel(self):
-        return tk.Label(
-            self.convertMaster,
-            text = "Processing...",
-            fg = "white",
-            bg=self.lightDark,
-            font=("Arial", 50)
-        )
+    def youtubeToMp3(self):
+        #sets up frame
+        self.youtubeMp3Frame = tk.Frame(self.canvas, bg=self.lightDark)
+        self.canvas.create_window(950,650,window=self.youtubeMp3Frame)
+        self.youtubeMp3Frame.columnconfigure(2, minsize=1080)
 
-    def selectFile(self, type):
+        self.createFirstLabel(self.youtubeMp3Frame, "url")
+        self.createSecondLabel(self.youtubeMp3Frame, "mp3")
+        self.createDirectory(self.youtubeMp3Frame)
+
+        self.convertYoutubeMP3 = self.createConversionButton("youtubeMP3", self.youtubeMp3Frame)
+        self.convertYoutubeMP3.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+    def mp4ToMp3(self):
+        #sets up frame
+        self.mp4Frame = tk.Frame(self.canvas, bg=self.lightDark)
+        self.canvas.create_window(950, 700, window=self.mp4Frame)
+        self.mp4Frame.columnconfigure(2, minsize=1080)
+
+        self.createFirstLabel(self.mp4Frame, "mp4")
+        self.createSecondLabel(self.mp4Frame, "mp3")
+        self.createDirectory(self.mp4Frame)
+
+        #convert button 
+        self.convertMP4 = self.createConversionButton("mp4", self.mp4Frame)
+        self.convertMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+    def selectFile(self, type, master):
         if type == "mp4":
             if hasattr(self, "mp4Path"):
                 self.mp4Path.destroy()
             self.filePath = askopenfilename()
-            #filename[:-3] didn't work for some reason. idk if I'm just being dumb or not but this will do
             if self.filePath[len(self.filePath) - 3:len(self.filePath)] == "mp4":
                 self.mp4Path = tk.Label(
-                    self.mp4Frame,
+                    master,
                     text = self.filePath,
                     fg = "white",
                     bg = self.lightDark,
@@ -238,7 +259,7 @@ class theGUI:
                 self.fileClearToGo = True
             elif self.filePath == "":
                 self.mp4Path = tk.Label(
-                    self.mp4Frame,
+                    master,
                     text = "Input something.",
                     fg = "red",
                     bg = self.lightDark,
@@ -247,7 +268,7 @@ class theGUI:
                 self.fileClearToGo = False
             else:
                 self.mp4Path = tk.Label(
-                    self.mp4Frame,
+                    master,
                     text = "That's not a mp4 file. Try again.",
                     fg = "red",
                     bg = self.lightDark,
@@ -261,7 +282,7 @@ class theGUI:
             self.directoryPath = askdirectory()
             if self.directoryPath != "":
                 self.directoryPathText = tk.Label(
-                    self.mp4Frame,
+                    master,
                     text = self.directoryPath,
                     fg = "white",
                     bg = self.lightDark,
@@ -270,7 +291,7 @@ class theGUI:
                 self.directoryClearToGo = True
             else:
                 self.directoryPathText = tk.Label(
-                    self.mp4Frame,
+                    master,
                     text = "Input something.",
                     fg = "red",
                     bg = self.lightDark,
@@ -279,18 +300,12 @@ class theGUI:
                 self.directoryClearToGo = False
             self.directoryPathText.grid(row=2, column=2)
 
-    def convert(self):
-        if self.convertType == "mp4":
-            if self.fileClearToGo and self.directoryClearToGo and self.mp3Name.get() != "":
-                self.convertMP4.destroy()
-                self.processingText = self.createProcessingLabel()
-                self.processingText.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
-
-                sleep(.5)
-
+    def convert(self, type):
+        if type == "mp4":
+            if self.fileClearToGo and self.directoryClearToGo and self.entryBox.get() != "":
                 self.video = self.filePath
                 self.directory = self.directoryPath
-                self.audioName = self.mp3Name.get()
+                self.audioName = self.entryBox.get()
                 self.outputFile = os.path.join(self.directory, self.audioName + ".mp3")
 
                 #the actual conversion
@@ -299,9 +314,6 @@ class theGUI:
                 messagebox.showinfo(title = "Success!!!!", message = "MP4 - MP3 conversion complete!")
 
                 #reset
-                self.processingText.destroy()
-                self.convertMP4 = self.createConversionButton("mp4")
-                self.convertMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
                 self.directoryPathText.destroy()
                 self.mp4Path.destroy()
                 self.directoryPath = None
@@ -310,5 +322,31 @@ class theGUI:
                 self.directoryClearToGo = False
             else:
                 messagebox.showerror(title = "Error!!!!!", message = "Information missing. Go and see what you did.")
+        elif type == "youtubeMP3":
+            if self.urlBox.get() != "" and self.entryBox.get() != "" and self.directoryClearToGo:
+                self.youtubeURl = self.urlBox.get()
+                self.directory = self.directoryPath
+                self.audioName = self.entryBox.get()
+                self.outputFile = os.path.join(self.directory, self.audioName + ".mp3")
 
+                #actual conversion
+                self.ydl_opts = {
+                    "format" : "bestaudio/best",
+                    "outtmpl" : self.outputFile,
+                    "noplaylist" : True,
+                    "postprocessors" : [{
+                        "key" : "FFmpegExtractAudio",
+                        "preferredcodec" : "mp3",
+                        "preferredquality" : "192"
+                    }]
+                }
+                with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
+                    ydl.download([self.youtubeURl])
+                messagebox.showinfo(title = "Sucess!!!", message = "Youtube - MP3 conversion complete!")
+
+                self.directoryPathText.destroy()
+                self.directoryPath = None
+                self.directoryClearToGo = False
+            else:
+                messagebox.showerror(title = "Error!!!!!", message = "Information missing. Go and see what you did.")
 theGUI()
