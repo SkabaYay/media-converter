@@ -1,5 +1,5 @@
 # 📁 Media Converter
-A Full Stack Project to convert files into different types. 
+A Desktop Application Project to convert files into different types. 
 
 ## 🤔 Why?
 There are too many shady websites online, so I'm going to create my own.
@@ -18,11 +18,11 @@ Also, I'm primarily making this for personal use (editing).
 
 ## 🧐 Conversions Available
 
-mp4 to mp3
+MP4 to MP3
+
+YouTube URL to MP3
 
 
 ## 🏗️ Conversions in Development
 
-YouTube url to mp4
-
-YouTube url to mp3
+YouTube URL to MP4
