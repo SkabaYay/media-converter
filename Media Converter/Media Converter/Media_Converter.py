@@ -7,6 +7,13 @@ from tkinter.filedialog import askopenfile, askopenfilename, askdirectory
 from pydub import AudioSegment
 from time import sleep
 
+#--HOW TO ADD CONVERSIONS
+#1. Create the method
+#2. Use the functions to make the GUI (e.g. self.createFirstLabel())
+#3. Update confirmPressed()
+#4. Update convert() for the conversion code
+#If needed: Update selectFile if a new type of file is added
+
 class theGUI:
 
     def __init__(self):
@@ -111,10 +118,17 @@ class theGUI:
         self.root.mainloop()
 
     def confirmPressed(self):
+        #removes old frames
+        for frame in ["youtubeMp3Frame", "youtubeMp4Frame", "mp4Frame"]:
+            if hasattr(self, frame):
+                getattr(self, frame).destroy()
+
         if self.optionOne.get().lower() == "mp4" and self.optionTwo.get().lower() == "mp3":
             self.mp4ToMp3()
         elif self.optionOne.get().lower() == "youtube" and self.optionTwo.get().lower() == "mp3":
             self.youtubeToMp3()
+        elif self.optionOne.get().lower() == "youtube" and self.optionTwo.get().lower() == "mp4":
+            self.youtubeToMp4()
         else:
             messagebox.showerror(title = "Error!!!!!!", message = "You did something wrong bozo")
 
@@ -219,7 +233,7 @@ class theGUI:
     def youtubeToMp3(self):
         #sets up frame
         self.youtubeMp3Frame = tk.Frame(self.canvas, bg=self.lightDark)
-        self.canvas.create_window(950,650,window=self.youtubeMp3Frame)
+        self.canvas.create_window(950,700,window=self.youtubeMp3Frame)
         self.youtubeMp3Frame.columnconfigure(2, minsize=1080)
 
         self.createFirstLabel(self.youtubeMp3Frame, "url")
@@ -228,6 +242,19 @@ class theGUI:
 
         self.convertYoutubeMP3 = self.createConversionButton("youtubeMP3", self.youtubeMp3Frame)
         self.convertYoutubeMP3.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
+
+    def youtubeToMp4(self):
+        #sets up frame
+        self.youtubeMp4Frame = tk.Frame(self.canvas, bg=self.lightDark)
+        self.canvas.create_window(950, 700, window=self.youtubeMp4Frame)
+        self.youtubeMp4Frame.columnconfigure(2, minsize=1080)
+
+        self.createFirstLabel(self.youtubeMp4Frame, "url")
+        self.createSecondLabel(self.youtubeMp4Frame, "mp4")
+        self.createDirectory(self.youtubeMp4Frame)
+       
+        self.convertYoutubeMP4 = self.createConversionButton("youtubeMP4", self.youtubeMp4Frame)
+        self.convertYoutubeMP4.grid(row=5, column=0, columnspan=3, padx=0, pady=(70,0), sticky="")
 
     def mp4ToMp3(self):
         #sets up frame
@@ -344,6 +371,38 @@ class theGUI:
                     ydl.download([self.youtubeURl])
                 messagebox.showinfo(title = "Sucess!!!", message = "Youtube - MP3 conversion complete!")
 
+                self.directoryPathText.destroy()
+                self.directoryPath = None
+                self.directoryClearToGo = False
+            else:
+                messagebox.showerror(title = "Error!!!!!", message = "Information missing. Go and see what you did.")
+        elif type == "youtubeMP4":
+            if self.urlBox.get() != "" and self.entryBox.get() != "" and self.directoryClearToGo:
+                self.youtubeURl = self.urlBox.get()
+                self.directory = self.directoryPath
+                self.audioName = self.entryBox.get()
+                self.outputFile = os.path.join(self.directory, self.audioName + ".mp4")
+
+                #actual conversion
+                self.ydl_opts = {
+                    "format" : "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+                    "outtmpl" : self.outputFile,
+                    "noplaylist" : True,
+                    "postprocessors": [{
+                        "key": "FFmpegVideoConvertor",
+                        "preferedformat": "mp4",
+                    }],
+                    # This adds the compatibility layer for After Effects
+                    "postprocessor_args": [
+                        "-c:v", "libx264", 
+                        "-pix_fmt", "yuv420p", 
+                        "-crf", "18"
+                    ] 
+                }
+
+                with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
+                    ydl.download([self.youtubeURl])
+                messagebox.showinfo(title = "Success!!!", message = "Youtube - MP4 Conversion complete!")
                 self.directoryPathText.destroy()
                 self.directoryPath = None
                 self.directoryClearToGo = False
