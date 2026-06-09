@@ -1,5 +1,5 @@
 # 📁 Media Converter
-A Full Stack Project to convert files into different types. 
+A Desktop Application Project to convert files into different types. 
 
 ## 🤔 Why?
 There are too many shady websites online, so I'm going to create my own.
